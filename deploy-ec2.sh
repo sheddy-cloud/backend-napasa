@@ -28,6 +28,12 @@ if ! command -v git &> /dev/null; then
     sudo apt install -y git
 fi
 
+# Install Nginx (if not already installed)
+if ! command -v nginx &> /dev/null; then
+    echo "📦 Installing Nginx..."
+    sudo apt install -y nginx
+fi
+
 # Create application directory
 echo "📁 Setting up application directory..."
 sudo mkdir -p /opt/napasa-backend
@@ -101,17 +107,116 @@ pm2 save
 # Setup PM2 to start on boot
 pm2 startup
 
+# Configure Nginx
+echo "⚙️ Configuring Nginx..."
+sudo tee /etc/nginx/sites-available/napasa-backend > /dev/null << 'EOF'
+server {
+    listen 80;
+    server_name 13.51.162.253;
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private must-revalidate auth;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript;
+
+    # API routes
+    location /api/ {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 75s;
+    }
+
+    # Health check endpoint
+    location /health {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Static files (uploads)
+    location /uploads/ {
+        alias /opt/napasa-backend/uploads/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Default location
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+EOF
+
+# Enable the site
+sudo ln -sf /etc/nginx/sites-available/napasa-backend /etc/nginx/sites-enabled/
+
+# Remove default site
+sudo rm -f /etc/nginx/sites-enabled/default
+
+# Test Nginx configuration
+echo "🔍 Testing Nginx configuration..."
+sudo nginx -t
+
+if [ $? -eq 0 ]; then
+    echo "✅ Nginx configuration is valid"
+    
+    # Start and enable Nginx
+    sudo systemctl start nginx
+    sudo systemctl enable nginx
+    sudo systemctl reload nginx
+    
+    echo "✅ Nginx started and enabled"
+else
+    echo "❌ Nginx configuration has errors"
+    exit 1
+fi
+
 echo "✅ Deployment completed!"
-echo "🌐 Your API should be available at: http://13.51.162.253:5000"
-echo "🏥 Health check: http://13.51.162.253:5000/health"
+echo "🌐 Your API is now available at:"
+echo "   - Direct: http://13.51.162.253:5000"
+echo "   - Via Nginx: http://13.51.162.253"
+echo "🏥 Health check: http://13.51.162.253/health"
+echo "📡 API Base URL: http://13.51.162.253/api"
 echo ""
 echo "📋 Useful commands:"
-echo "  pm2 status          - Check application status"
-echo "  pm2 logs            - View logs"
-echo "  pm2 restart napasa-backend - Restart application"
-echo "  pm2 stop napasa-backend    - Stop application"
+echo "  pm2 status                    - Check application status"
+echo "  pm2 logs                      - View application logs"
+echo "  pm2 restart napasa-backend    - Restart application"
+echo "  pm2 stop napasa-backend       - Stop application"
+echo "  sudo systemctl status nginx   - Check Nginx status"
+echo "  sudo systemctl reload nginx   - Reload Nginx config"
+echo "  sudo nginx -t                 - Test Nginx configuration"
 echo ""
 echo "⚠️ Don't forget to:"
-echo "  1. Configure your EC2 security group to allow port 5000"
-echo "  2. Update your Flutter app to use http://13.51.162.253:5000/api"
+echo "  1. Configure your EC2 security group to allow ports 80 and 5000"
+echo "  2. Update your Flutter app to use http://13.51.162.253/api"
 echo "  3. Edit .env file with your actual configuration"
+echo "  4. Consider setting up SSL certificate for HTTPS"
