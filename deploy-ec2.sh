@@ -97,6 +97,11 @@ pm2 startup
 
 # Configure Nginx
 echo "⚙️ Configuring Nginx..."
+
+# Remove existing configuration if it exists
+sudo rm -f /etc/nginx/sites-available/napasa-backend
+sudo rm -f /etc/nginx/sites-enabled/napasa-backend
+
 sudo tee /etc/nginx/sites-available/napasa-backend > /dev/null << 'EOF'
 server {
     listen 80;
@@ -113,7 +118,7 @@ server {
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private must-revalidate auth;
+    gzip_proxied expired no-cache no-store private auth;
     gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript;
 
     # API routes
