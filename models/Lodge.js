@@ -5,7 +5,7 @@ const lodgeSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Lodge name is required'],
     trim: true,
-    maxlength: [100, 'Lodge name cannot exceed 100 characters']
+    maxlength: [100, 'Lodge name cannot exceed 100 characters!']
   },
   location: {
     type: String,
