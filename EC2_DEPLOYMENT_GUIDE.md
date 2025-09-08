@@ -68,7 +68,9 @@ Make sure your EC2 security group allows:
 
 | Type | Protocol | Port Range | Source |
 |------|----------|------------|---------|
+| HTTP | TCP | 80 | 0.0.0.0/0 |
 | HTTP | TCP | 5000 | 0.0.0.0/0 |
+| HTTPS | TCP | 443 | 0.0.0.0/0 (for future SSL) |
 | SSH | TCP | 22 | Your IP |
 
 ## 📱 Update Flutter App
@@ -85,6 +87,10 @@ static const String baseUrl = 'http://13.51.162.253:5000/api';
 
 Test your deployment:
 ```bash
+# Via Nginx (recommended)
+curl http://13.51.162.253/health
+
+# Direct to Node.js (for debugging)
 curl http://13.51.162.253:5000/health
 ```
 
@@ -101,20 +107,20 @@ Expected response:
 ## 📋 Useful Commands
 
 ```bash
-# Check application status
-pm2 status
+# PM2 Commands
+pm2 status                    # Check application status
+pm2 logs napasa-backend       # View application logs
+pm2 restart napasa-backend    # Restart application
+pm2 stop napasa-backend       # Stop application
+pm2 monit                     # Monitor resources
 
-# View logs
-pm2 logs napasa-backend
-
-# Restart application
-pm2 restart napasa-backend
-
-# Stop application
-pm2 stop napasa-backend
-
-# Monitor resources
-pm2 monit
+# Nginx Commands
+sudo systemctl status nginx   # Check Nginx status
+sudo systemctl reload nginx   # Reload Nginx configuration
+sudo systemctl restart nginx  # Restart Nginx
+sudo nginx -t                 # Test Nginx configuration
+sudo tail -f /var/log/nginx/access.log  # View access logs
+sudo tail -f /var/log/nginx/error.log   # View error logs
 ```
 
 ## 🔍 Troubleshooting
@@ -142,6 +148,13 @@ sudo netstat -tlnp | grep :5000
 
 Once deployed, your API will be available at:
 
+### Via Nginx (Recommended)
+- **Base URL**: `http://13.51.162.253/api`
+- **Health Check**: `http://13.51.162.253/health`
+- **Register**: `POST http://13.51.162.253/api/auth/register`
+- **Login**: `POST http://13.51.162.253/api/auth/login`
+
+### Direct to Node.js (For Debugging)
 - **Base URL**: `http://13.51.162.253:5000/api`
 - **Health Check**: `http://13.51.162.253:5000/health`
 - **Register**: `POST http://13.51.162.253:5000/api/auth/register`
