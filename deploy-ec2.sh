@@ -39,6 +39,18 @@ echo "📁 Setting up application directory..."
 sudo mkdir -p /opt/napasa-backend
 sudo chown $USER:$USER /opt/napasa-backend
 cd /opt/napasa-backend
+
+# Clone or update repository (replace with your actual repo URL)
+echo "📥 Cloning repository..."
+if [ -d ".git" ]; then
+    echo "🔄 Updating existing repository..."
+    git pull origin main
+else
+    echo "📥 Cloning new repository..."
+    # Replace with your actual repository URL
+    git clone https://github.com/sheddy-cloud/backend-napasa.git .
+fi
+
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm install --production
@@ -97,11 +109,6 @@ pm2 startup
 
 # Configure Nginx
 echo "⚙️ Configuring Nginx..."
-
-# Remove existing configuration if it exists
-sudo rm -f /etc/nginx/sites-available/napasa-backend
-sudo rm -f /etc/nginx/sites-enabled/napasa-backend
-
 sudo tee /etc/nginx/sites-available/napasa-backend > /dev/null << 'EOF'
 server {
     listen 80;
@@ -118,7 +125,7 @@ server {
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
-    gzip_proxied expired no-cache no-store private auth;
+    gzip_proxied expired no-cache no-store private must-revalidate auth;
     gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript;
 
     # API routes
