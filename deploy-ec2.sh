@@ -39,18 +39,6 @@ echo "📁 Setting up application directory..."
 sudo mkdir -p /opt/napasa-backend
 sudo chown $USER:$USER /opt/napasa-backend
 cd /opt/napasa-backend
-
-# Clone or update repository (replace with your actual repo URL)
-echo "📥 Cloning repository..."
-if [ -d ".git" ]; then
-    echo "🔄 Updating existing repository..."
-    git pull origin main
-else
-    echo "📥 Cloning new repository..."
-    # Replace with your actual repository URL
-    git clone https://github.com/sheddy-cloud/backend-napasa.git .
-fi
-
 # Install dependencies
 echo "📦 Installing dependencies..."
 npm install --production
