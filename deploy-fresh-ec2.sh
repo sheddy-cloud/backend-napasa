@@ -227,3 +227,9 @@ echo "📋 Useful commands:"
 echo "   pm2 status                    # Check app status"
 echo "   pm2 logs napasa-backend       # View backend logs"
 echo "   sudo systemctl status nginx   # Check Nginx"
+
+
+
+
+
+

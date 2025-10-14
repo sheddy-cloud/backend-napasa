@@ -168,3 +168,9 @@ echo "pm2 restart napasa-backend    # Restart app"
 echo "sudo systemctl status nginx   # Check Nginx status"
 echo "sudo systemctl restart nginx  # Restart Nginx"
 echo "sudo nginx -t                 # Test Nginx config"
+
+
+
+
+
+

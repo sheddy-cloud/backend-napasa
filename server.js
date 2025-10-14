@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -80,11 +79,17 @@ app.use(notFound);
 app.use(errorHandler);
 
 // Database connection
+const { sequelize, testConnection, syncDatabase } = require('./src/database/config');
+
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/napasa');
-
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    const isConnected = await testConnection();
+    if (isConnected) {
+      await syncDatabase(false); // Don't force recreate tables
+      console.log('✅ PostgreSQL database connected and synchronized');
+    } else {
+      throw new Error('Database connection failed');
+    }
   } catch (error) {
     console.error('Database connection error:', error.message);
     process.exit(1);
