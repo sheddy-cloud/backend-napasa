@@ -96,3 +96,4 @@ echo "📋 Test endpoints:"
 echo "   curl http://localhost:5000/health"
 echo "   curl http://localhost:5000/api/auth/register"
 echo ""
+

@@ -116,3 +116,4 @@ process.on('uncaughtException', (err) => {
 startServer();
 
 module.exports = app;
+
