@@ -118,7 +118,7 @@ module.exports = {
   apps: [
     {
       name: 'napasa-main-backend',
-      script: 'server.js',
+      script: 'server_clean.js',
       instances: 1,
       autorestart: true,
       watch: false,
