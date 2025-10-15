@@ -55,9 +55,9 @@ fi
 # --------------------------
 echo "4. Setting up PostgreSQL database and user..."
 sudo -u postgres psql -c "CREATE DATABASE napasa_main_backend;" 2>/dev/null || echo "Database already exists"
-sudo -u postgres psql -c "CREATE USER SHEDRACK WITH PASSWORD 'SHEDRACKs.677';" 2>/dev/null || echo "User already exists"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE napasa_main_backend TO SHEDRACK;"
-sudo -u postgres psql -c "ALTER USER SHEDRACK CREATEDB;"
+sudo -u postgres psql -c "CREATE USER shedrack WITH PASSWORD 'SHEDRACKs.677';" 2>/dev/null || echo "User already exists"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE napasa_main_backend TO shedrack;"
+sudo -u postgres psql -c "ALTER USER shedrack CREATEDB;"
 
 # --------------------------
 # STEP 5: Set Up Application Directory
@@ -92,7 +92,7 @@ HOST=0.0.0.0
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=napasa_main_backend
-DB_USER=SHEDRACK
+DB_USER=shedrack
 DB_PASSWORD=SHEDRACKs.677
 
 JWT_SECRET=SHEDRACKs.677
