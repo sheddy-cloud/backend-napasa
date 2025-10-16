@@ -40,6 +40,7 @@ services:
       POSTGRES_DB: napasa_main_backend
     volumes:
       - pgdata:/var/lib/postgresql/data
+      - ./src/database/setup.sql:/docker-entrypoint-initdb.d/setup.sql:ro
     ports:
       - "5400:5432"
     networks:
