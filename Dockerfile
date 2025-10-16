@@ -1,35 +1,21 @@
-# syntax=docker/dockerfile:1
-
-# Use Node 18 LTS Alpine for smaller image
-FROM node:18-alpine AS base
+# Use Node 18 Alpine
+FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
-# Install dependencies separately for better layer caching
 COPY package*.json ./
-RUN npm ci --only=production
 
-# Copy application source
+# Install ALL dependencies including devDependencies
+RUN npm install
+
 COPY . .
 
-# Ensure uploads directory exists at runtime
 RUN mkdir -p uploads
 
-# Set environment
-ENV NODE_ENV=production \
+ENV NODE_ENV=development \
     HOST=0.0.0.0 \
     PORT=5000
 
-# Expose app port
 EXPOSE 5000
 
-# Start the server
-CMD ["npm", "start"]
-
-
-
-
-
-
-
-
+CMD ["npm", "run", "dev"]
