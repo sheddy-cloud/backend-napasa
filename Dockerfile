@@ -18,4 +18,4 @@ ENV NODE_ENV=development \
 
 EXPOSE 5000
 
-CMD ["npm", "run", "dev"]
+CMD ["./wait-for-db.sh","npm", "run", "dev"]
