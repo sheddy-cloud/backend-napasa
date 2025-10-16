@@ -1,7 +1,7 @@
 services:
   backend:
     build: .
-    container_name: napasa-main-backend
+    container_name: main-backend
     restart: unless-stopped
     ports:
       - "5000:5000"
