@@ -41,7 +41,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
-      #- "5433:5432"
+      - "5400:5432"
     networks:
       - napasa_ai_network
 
