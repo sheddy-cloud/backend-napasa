@@ -21,9 +21,7 @@ services:
       - .:/app
       - /app/node_modules
     command: npm run dev
-    depends_on:
-      - napasa_ai_postgres
-      - napasa_ai_redis
+   
     networks:
       - napasa_ai_network
 
