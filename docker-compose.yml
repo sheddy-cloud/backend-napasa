@@ -1,38 +1,33 @@
 version: "3.9"
 
 services:
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: napasa-backend
-    ports:
-      - "5000:5000"
-    environment:
-      NODE_ENV: production
-      HOST: 0.0.0.0
-      PORT: 5000
-      MONGODB_URI: mongodb+srv://shedcodes:SHEDRACKs.677@cluster1.l5p3lpp.mongodb.net/napasa?retryWrites=true&w=majority&appName=Cluster1
-      CLIENT_URL: http://localhost:3000
-    volumes:
-      - ./uploads:/usr/src/app/uploads
-    depends_on:
-      - mongo
-
-  mongo:
-    image: mongo:6
-    container_name: napasa-mongo
+  backend:
+    build: .
+    container_name: napasa-main-backend
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DB_HOST=napasa_ai_postgres
+      - DB_PORT=5432
+      - DB_NAME=ai_safari_db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - REDIS_HOST=napasa_ai_redis
+      - REDIS_PORT=6379
     volumes:
-      - mongo-data:/data/db
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+    depends_on:
+      - napasa_ai_postgres
+      - napasa_ai_redis
+    networks:
+      - napasa_ai_network
 
-volumes:
-  mongo-data:
-
-
-
-
-
-
+networks:
+  napasa_ai_network:
+    external: true
+    name: napasa-ai-backend_napasa_ai_network
